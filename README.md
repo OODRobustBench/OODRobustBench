@@ -11,7 +11,7 @@ Paper: https://arxiv.org/abs/2310.12793
 
 Existing works have made great progress in improving adversarial robustness, but typically test their method only on data from the same distribution as the training data, i.e. in-distribution (ID) testing. As a result, it is unclear how such robustness generalizes under input distribution shifts, i.e. out-of-distribution (OOD) testing. This is a concerning omission as such distribution shifts are unavoidable when methods are deployed in the wild. To address this issue we propose a benchmark named OODRobustBench to comprehensively assess OOD adversarial robustness using 23 dataset-wise shifts (i.e. naturalistic shifts in input distribution) and 6 threat-wise shifts (i.e., unforeseen adversarial threat models).
 
-![](/home/lin/Projects/OODRobustBench/assets/benchmark_construction.png)
+![](assets/benchmark_construction.png)
 
 The code of OODRobustBench is built on top of [RobustBench](https://github.com/RobustBench/robustbench) to allow a unified, RobustBench-like, interface of evaluation and loading models and support loading (latest) models from RobustBench, in other words, you know how to use RobustBench then you know how to use OODRobustBench. Nevertheless, if you have not used RobustBench before, no worry! We have provided a detailed and easy-to-follow guide below for preparation and usage. 
 
@@ -69,7 +69,7 @@ TODO: host all other models in the same source or list their origins
 3. Modify `/oodrb/models/__init__.py` to add a callable constructor of your model arch
 4. Modify `load_model()` in `/oodrb/utils.py` to load trained weights to your model
 
-modify source code to support
+
 
 lambda, model, prepr, normalize
 
