@@ -21,6 +21,9 @@ DATASETS.v2.data_list = 'image_ids/imagenet-v2_image_ids.txt'
 DATASETS.ON.data_dir = 'objectnet'
 DATASETS.ON.data_list = 'image_ids/objectnet_image_ids.txt'
 
+DATASETS.V.data_dir = 'ImageNet-V'
+DATASETS.V.data_list = 'image_ids/imagenet-v_image_ids.txt'
+
 
 class ImageNet(CustomImageFolder):
     VARIANTS = list(DATASETS.keys())
@@ -35,6 +38,17 @@ class ImageNet(CustomImageFolder):
         if variant in ['R', 'A', 'ON']:
             # remap targets to ImageNet class idx
             class_to_idx = ImageNet(root, split='val').class_to_idx
+        elif variant == 'V':
+            class_to_idx = {}
+            synset_to_idx = ImageNet(root, split='val').class_to_idx
+            
+            with open('oodrb/datasets/imagenet-v_synset_words.txt', 'r') as f:
+                for line in f.readlines():
+                    synset = line[:9]
+                    word = line[10:-1]
+                    
+                    class_to_idx[word] = synset_to_idx[synset]
+                    
         elif variant == 'v2':
             class_to_idx = {str(i):i for i in range(1000)}
         else:

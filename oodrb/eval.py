@@ -183,7 +183,8 @@ def benchmark(
         "model_info"
     ) / dataset_.value / threat_model / f"{model_name}.json"
     
-    if os.path.exists(opt_path): with open(opt_path, "r") as f: opt = Dict(json.load(f))
+    if os.path.exists(opt_path):
+        with open(opt_path, "r") as f: opt = Dict(json.load(f))
     else: opt = Dict()
     
     device = device or torch.device("cpu")

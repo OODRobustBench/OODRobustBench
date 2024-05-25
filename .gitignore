@@ -1,6 +1,7 @@
 data
 figs
 error_info
+model_info
 /models
 output
 preds

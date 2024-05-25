@@ -41,12 +41,13 @@ $DATA/
 |–– imagenet-r/
 |–– objectnet/
 |–– ImageNet-C/
+|–– ImageNet-V/
 ```
 
 The above datasets are divided into two groups:
 
 1. Automatic download: CIFAR10, CIFAR10-C
-2. Manual download: [CIFAR10.1](https://github.com/modestyachts/CIFAR-10.1/tree/master/datasets), [CIFAR10.2](https://github.com/modestyachts/cifar-10.2), [CIFAR10-R](https://github.com/TreeLLi/cifar10-r), [CINIC-10](https://datashare.ed.ac.uk/handle/10283/3192), [ImageNet](https://image-net.org/download.php), [ImageNet-v2](https://huggingface.co/datasets/vaishaal/ImageNetV2/tree/main), [ImageNet-A](https://people.eecs.berkeley.edu/~hendrycks/imagenet-a.tar), [ImageNet-R](https://people.eecs.berkeley.edu/~hendrycks/imagenet-r.tar), [ImageNet-C](https://github.com/hendrycks/robustness#imagenet-c), [ObjectNet](https://www.kaggle.com/datasets/treelinli/objectnet-imagenet-overlap)
+2. Manual download: [CIFAR10.1](https://github.com/modestyachts/CIFAR-10.1/tree/master/datasets), [CIFAR10.2](https://github.com/modestyachts/cifar-10.2), [CIFAR10-R](https://github.com/TreeLLi/cifar10-r), [CINIC-10](https://datashare.ed.ac.uk/handle/10283/3192), [ImageNet](https://image-net.org/download.php), [ImageNet-v2](https://huggingface.co/datasets/vaishaal/ImageNetV2/tree/main), [ImageNet-A](https://people.eecs.berkeley.edu/~hendrycks/imagenet-a.tar), [ImageNet-R](https://people.eecs.berkeley.edu/~hendrycks/imagenet-r.tar), [ImageNet-C](https://github.com/hendrycks/robustness#imagenet-c), [ObjectNet](https://www.kaggle.com/datasets/treelinli/objectnet-imagenet-overlap), [ImageNet-V](https://github.com/Heathcliff-saku/ViewFool_/tree/master), [ImageNet-Sketch](https://github.com/HaohanWang/ImageNet-Sketch)
 
 Datasets in Group 1 will be downloaded automatically when used. Datasets in Group 2 need to be downloaded from the given links by clicking the dataset name and structured as specified above. A guide on how to prepare ImageNet can be found [here](https://github.com/soumith/imagenet-multiGPU.torch#data-processing).
 
