@@ -42,6 +42,7 @@ $DATA/
 |–– objectnet/
 |–– ImageNet-C/
 |–– ImageNet-V/
+|–– ImageNet-Sketch/
 ```
 
 The above datasets are divided into two groups:

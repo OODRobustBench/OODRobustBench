@@ -24,6 +24,9 @@ DATASETS.ON.data_list = 'image_ids/objectnet_image_ids.txt'
 DATASETS.V.data_dir = 'ImageNet-V'
 DATASETS.V.data_list = 'image_ids/imagenet-v_image_ids.txt'
 
+DATASETS.S.data_dir = 'ImageNet-Sketch'
+DATASETS.S.data_list = 'image_ids/imagenet-s_image_ids.txt'
+
 
 class ImageNet(CustomImageFolder):
     VARIANTS = list(DATASETS.keys())
@@ -35,7 +38,7 @@ class ImageNet(CustomImageFolder):
         if split is not None: data_dir = os.path.join(data_dir, split)
         assert os.path.isdir(data_dir)
 
-        if variant in ['R', 'A', 'ON']:
+        if variant in ['R', 'A', 'ON', 'S']:
             # remap targets to ImageNet class idx
             class_to_idx = ImageNet(root, split='val').class_to_idx
         elif variant == 'V':
