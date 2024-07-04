@@ -12,9 +12,9 @@ from robustbench.utils import _safe_load_state_dict, add_substr_to_state_dict
 from robustbench.utils import load_model as load_model_from_rb
 from torch import nn
 
-from models import models
-from models.custom_models.utils import build_custom_model
-from models.ARES import get_model
+from .models import models
+from .models.custom_models.utils import build_custom_model
+from .models.ARES import get_model
 
 import copy
 import numpy as np
@@ -113,7 +113,6 @@ def filter_substr_to_state_dict(state_dict, substr):
 
 ACC_FIELDS = {
     ThreatModel.corruptions: "corruptions_acc",
-    ThreatModel.corruptions_3d: "corruptions_acc_3d",
     ThreatModel.L2: ("external", "autoattack_acc"),
     ThreatModel.Linf: ("external", "autoattack_acc")
 }

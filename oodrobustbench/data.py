@@ -3,7 +3,7 @@ from addict import Dict
 
 from torch.utils.data import DataLoader
 
-from datasets import cifar, imagenet
+from .datasets import cifar, imagenet
 
 NATURAL_SHIFTS = Dict()
 NATURAL_SHIFTS.cifar10 = list(cifar.DATASETS.keys())
