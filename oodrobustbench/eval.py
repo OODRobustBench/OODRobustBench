@@ -13,7 +13,6 @@ from addict import Dict
 
 from itertools import product
 
-# from robustbench.data import CORRUPTIONS, get_preprocessing, load_clean_dataset, CORRUPTION_DATASET_LOADERS
 from robustbench.data import CORRUPTIONS_DICT, get_preprocessing, load_clean_dataset, CORRUPTION_DATASET_LOADERS
 from robustbench.model_zoo.enums import BenchmarkDataset, ThreatModel
 
@@ -383,9 +382,5 @@ def main(args: Namespace) -> None:
               preprocessing=prepr)
     
 if __name__ == '__main__':
-    # Example:
-    # python -m robustbench.eval --n_ex=5000 --dataset=imagenet --threat_model=Linf \
-    #                            --model_name=Salman2020Do_R18 --data_dir=/tmldata1/andriush/imagenet/val \
-    #                            --batch_size=128 --eps=0.0156862745
     args_ = parser.parse_args()
     main(args_)
