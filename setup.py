@@ -4,11 +4,11 @@ with open("README.md", "r", encoding='utf-8') as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="oodrb",
+    name="oodrobustbench",
     version="0.1",
-    author="Lin Li",
+    author="Lin Li, Yifei Wang, Chawin Sitawarin, Michael Spratling",
     author_email="linli.tree@outlook.com",
-    description="This package provides the data for RobustBench together with the model zoo.",
+    description="This package provides the data for OODRobustBench together with the model zoo.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/OODRobustBench/OODRobustBench",
@@ -24,7 +24,7 @@ setuptools.setup(
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: Apache Software License",
+        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
     include_package_data=True,
