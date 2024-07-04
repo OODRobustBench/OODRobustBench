@@ -1,13 +1,13 @@
 # OODRobustBench: Adversarial Robustness under Distribution Shift
 **Lin Li (KCL), Yifei Wang (MIT), Chawin Sitawarin (UC Berkeley), Michael Spratling (KCL)**
 
-This is the official code of the paper "OODRobustBench: a benchmark and large-scale analysis of adversarial robustness under distribution shift". This work has been accepted by the main conference of ICML 2024 and the workshop Data-centric Machine Learning Research (DMLR) of ICLR 2024.
+This is the official code of the paper "OODRobustBench: a Benchmark and Large-Scale Analysis of Adversarial Robustness under Distribution Shift". This work has been accepted by the main conference of ICML 2024 and the workshop Data-centric Machine Learning Research (DMLR) of ICLR 2024.
 
 The leaderboard: https://oodrobustbench.github.io/
 
 Paper: https://arxiv.org/abs/2310.12793
 
-## High-level idea and design
+## 1. High-level idea and design
 
 Existing works have made great progress in improving adversarial robustness, but typically test their method only on data from the same distribution as the training data, i.e. in-distribution (ID) testing. As a result, it is unclear how such robustness generalizes under input distribution shifts, i.e. out-of-distribution (OOD) testing. This is a concerning omission as such distribution shifts are unavoidable when methods are deployed in the wild. To address this issue we propose a benchmark named OODRobustBench to comprehensively assess OOD adversarial robustness using 23 dataset-wise shifts (i.e. naturalistic shifts in input distribution) and 6 threat-wise shifts (i.e., unforeseen adversarial threat models).
 
@@ -15,15 +15,44 @@ Existing works have made great progress in improving adversarial robustness, but
 
 The code of OODRobustBench is built on top of [RobustBench](https://github.com/RobustBench/robustbench) to allow a unified, RobustBench-like, interface of evaluation and loading models and support loading (latest) models from RobustBench, in other words, you know how to use RobustBench then you know how to use OODRobustBench. Nevertheless, if you have not used RobustBench before, no worry! We have provided a detailed and easy-to-follow guide below for preparation and usage. 
 
-## Preparation
+## 2. Preparation
 
-### Dependencies
+### 2.1. Installation
+
+First of all, **Python 3.8 is strongly recommended** because there is a conflict of dependencies between [robustbench](https://github.com/RobustBench/robustbench) and [perceptual-advex](https://github.com/cassidylaidlaw/perceptual-advex) when a higher version like Python 3.9 is used. 
+
+#### As a repository
+
+clone the project and run the following command to install required packages:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Data
+#### As a package
+
+```bash
+pip install git+https:github.com:OODRobustBench/OODRobustBench.git
+```
+
+This enables importing the package as follows:
+
+```python
+from oodrobustbench.eval import benchmark
+```
+
+#### Resolve a Python compatibility issue
+
+Unfortunately, the latest version of [robustbench](https://github.com/RobustBench/robustbench) has an [issue](https://github.com/RobustBench/robustbench/blob/master/robustbench/model_zoo/architectures/robustarch_wide_resnet.py) with loading models in Python 3.8. To run the code, follow these steps:
+
+1. Locate the file `robustbench/model_zoo/architectures/robustarch_wide_resnet.py` in your Python environment. This location is provided in the error information when you attempt to import `oodrobustbench`.
+2. Open the file in your preferred text editor.
+3. Uncomment line 10 to import `List` from `typing`. You should see the original warning here.
+4. Replace all instances of `list[]` with `List[]`. This can be quickly done by replacing `list[` with `List[`.
+
+I will monitor updates to robustbench and remove this section once the issue is resolved.
+
+### 2.2. Data
 
 We suggest to put all datasets under the same directory (say $DATA) to ease data management and avoid modifying the source code of data loading. An overview of the file structure is shown below
 
@@ -54,116 +83,120 @@ Datasets in Group 1 will be downloaded automatically when used. Datasets in Grou
 
 Note that the folder names should be followed strictly unless modifying our original source code. We suggest to use [soft link](https://en.wikipedia.org/wiki/Symbolic_link) to reuse the datasets that you have already had before by linking them to $DATA. 
 
-## Model Zoo
+## 3. Model Zoo
 
-Our model zoo consists of two groups: ones are loaded by RobustBench API and the others are manually collected from public adversarial ML works (not covered by RobustBench at least by the release time of this work). Therefore, **OODRobustBench should be able to support the seamless loading of future submissions to RobustBench by simply upgrading the version of RobustBench in the dependency.** 
+Our model zoo consists of three groups: 
 
-TODO: host all other models in the same source or list their origins
+1. *RobustBench models* are loaded by [robustbench](https://github.com/RobustBench/robustbench) API
+2. *Public collected models* are manually collected from public adversarial ML works (not covered by RobustBench by the release time of this work). 
+3. *Custom models* were trained by ourselves, see [here](#5.-Custom-Models) for details.
 
-### Automatic loading and manual download
+Noticeably, thanks to the deep integration with RobustBench, **OODRobustBench can seamlessly load the latest submissions to RobustBench** by simply upgrading the RobustBench package in the dev environment.
 
+### 3.1. Automatic model loading
 
+To load a model, we provide a unified API similar to RobustBench:
 
-#### Add your model to the model zoo
+```python
+from oodrobustbench.utils import load_model
+# an example of loading a model named Wong2020Fast for CIFAR10 Linf
+model = load_model(model_name='Wong2020Fast', 
+                   model_dir='/root/to/models',
+                   dataset='cifar10',
+                   threat_model='Linf')
+```
 
-1. Put your model checkpoint file under the appropriate directory
-2. (Optional) add your custom model architecture file under `/oodrb/models`
-3. Modify `/oodrb/models/__init__.py` to add a callable constructor of your model arch
-4. Modify `load_model()` in `/oodrb/utils.py` to load trained weights to your model
+Replace `/root/to/models` with the real directory for `model_dir`, by default, `models` under the working directory will be used. 
 
+The weights of models of RobustBench and *custom models* will be automatically downloaded and placed in the specified directory if needed, while the weights of *public collected* models currently need to be manually downloaded from this sharedpoint (TODO) and placed in the appropriate directory. 
 
+Regarding model names, please refer to [robustbench](https://github.com/RobustBench/robustbench) for RobustBench models, [this section](#5.-Custom-Models) for custom models, and [this source code file](https://github.com/OODRobustBench/OODRobustBench/blob/main/oodrobustbench/models/__init__.py) for public collected models.
 
-lambda, model, prepr, normalize
+### 3.2. Contribution: submit your model to the leaderboard and / or model zoo 
 
+Thanks for your interest! To submit your model to the leaderboard, you need to first enable the automatic loading of your model as following:
 
+1. (Optional) add your custom model architecture file under `/oodrobustbench/models`
+3. Modify `/oodrobustbench/models/__init__.py` to add a callable constructor of your model arch
+4. Modify `load_model()` in `/oodrobustbench/utils.py` to load trained weights to your model
 
-### Contribution: Submit your model to the model zoo and leaderboard
+Please refer to [this doc](https://github.com/RobustBench/robustbench/tree/master?tab=readme-ov-file#model-definition) for some guidance, otherwise, contact the author if further clarification required. 
 
-Below summarize the steps to submit your model to the leaderboad:
+After successfully adding your model, say it can be automatically loaded by the code, you need to email the author (`linli.tree@outlook.com`) with the above modified files and your model weights for a submission to the leaderboard. 
 
-1. Open a pull
-
-To submit your model to the leaderboard, you need to first integrate your model into the model zoo by modifying the source code.
-
-
-
-## Evaluation
+## 4. Evaluation
 
 We describe below the template commands we used to get the results reported in our paper. The output results are saved under the directory `model_info/$DATASET/$THREAT_MODEL`. The program automatically saves the result of each shift evaluation and load the results from the saved file if have so no need to worry about the evaluation being interrupted.
 
-### Dataset shift
+### 4.1. Dataset shift
 
 For CIFAR10 $\ell_\infty$ models under all corruptions and natural shifts with 10k samples:
 
 ```bash
-python oodrb/eval.py --data_dir $DATA --threat-model Linf --adv-norm Linf -a mm5 --corruption-models corruptions --natural-shifts all -n 10000 --model_name $MODEL_NAME
+python -m oodrobustbench.eval --data_dir $DATA --threat-model Linf --adv-norm Linf -a mm5 --corruption-models corruptions --natural-shifts all -n 10000 --model_name $MODEL_NAME
 ```
 
-Please refer to the code of `oodrb/eval.py` or running the command `python oodrb/eval.py -h` for the explanation and the candidate values of each argument. 
+Please refer to the code of `oodrobustbench/eval.py` or running the command `python -m oodrobustbench.eval -h` for the explanation and the candidate values of each argument. 
 
 For CIFAR10 $\ell_2$ models:
 
 ```bash
-python oodrb/eval.py --data_dir $DATA --threat-model L2 --adv-norm L2 -a mm5 --corruption-models corruptions --natural-shifts all -n 10000 --model_name $MODEL_NAME
+python -m oodrobustbench.eval --data_dir $DATA --threat-model L2 --adv-norm L2 -a mm5 --corruption-models corruptions --natural-shifts all -n 10000 --model_name $MODEL_NAME
 ```
 
 For ImageNet $\ell_\infty$ models:
 
 ```bash
-python oodrb/eval.py --data_dir $DATA --dataset imagenet --threat-model Linf --adv-norm Linf -a mm5 --eps 0.01568627 --corruption-models corruptions --natural-shifts all -n 5000 --model_name $MODEL_NAME
+python -m oodrobustbench.eval --data_dir $DATA --dataset imagenet --threat-model Linf --adv-norm Linf -a mm5 --eps 0.01568627 --corruption-models corruptions --natural-shifts all -n 5000 --model_name $MODEL_NAME
 ```
 
-### Threat shift
+### 4.2 Threat shift
 
 For CIFAR10 $\ell_\infty$ models against LPA threat shift:
 
 ```bash
-python oodrb/eval.py --data_dir $DATA --threat-model Linf -a lpa --eps 0.5 -n 10000 --model_name $MODEL_NAME
+python -m oodrobustbench.eval --data_dir $DATA --threat-model Linf -a lpa --eps 0.5 -n 10000 --model_name $MODEL_NAME
 ```
 
 For CIFAR10 $\ell_\infty$ models against PPGD threat shift:
 
 ```bash
-python oodrb/eval.py --data_dir $DATA --threat-model Linf -a ppgd --eps 0.5 -n 10000 --model_name $MODEL_NAME
+python -m oodrobustbench.eval --data_dir $DATA --threat-model Linf -a ppgd --eps 0.5 -n 10000 --model_name $MODEL_NAME
 ```
 
 For CIFAR10 $\ell_\infty$ models against ReColor threat shift:
 
 ```bash
-python oodrb/eval.py --data_dir $DATA --threat-model Linf -a stadv --eps 0.05 -n 10000 --model_name $MODEL_NAME
+python -m oodrobustbench.eval --data_dir $DATA --threat-model Linf -a stadv --eps 0.05 -n 10000 --model_name $MODEL_NAME
 ```
 
 For CIFAR10 $\ell_\infty$ models against StAdv threat shift:
 
 ```bash
-python oodrb/eval.py --data_dir $DATA --threat-model Linf -a recolor --eps 0.06 -n 10000 --model_name $MODEL_NAME
+python -m oodrobustbench.eval --data_dir $DATA --threat-model Linf -a recolor --eps 0.06 -n 10000 --model_name $MODEL_NAME
 ```
 
 For CIFAR10 $\ell_\infty$ models against different $p$-norm threat shift:
 
 ```bash
-python oodrb/eval.py --data_dir $DATA --threat-model Linf --adv-norm L2 -a mm5 --eps 0.5 -n 10000 --model_name $MODEL_NAME
+python -m oodrobustbench.eval --data_dir $DATA --threat-model Linf --adv-norm L2 -a mm5 --eps 0.5 -n 10000 --model_name $MODEL_NAME
 ```
 
 For CIFAR10 $\ell_\infty$ models against different $\epsilon$ threat shift:
 
 ```bash
-python oodrb/eval.py --data_dir $DATA --threat-model Linf --adv-norm Linf -a mm5 --eps 0.0470588 -n 10000 --model_name $MODEL_NAME
+python -m oodrobustbench.eval --data_dir $DATA --threat-model Linf --adv-norm Linf -a mm5 --eps 0.0470588 -n 10000 --model_name $MODEL_NAME
 ```
 
 Please refer to our paper for the configuration of threat shifts for the settings other than CIFAR10 $\ell_\infty$.
 
-### Evaluate your own model
+### 4.3 Evaluate your own model
 
-To evaluate your own models, there are three options.
-
-#### Calling benchmark()
-
-The first solution is to use the low-level API `benchmark()` provided in `oodrb/eval.py` as exemplified below:
+To evaluate your own models, you can use `benchmark()`  as exemplified below:
 
 ```python
-from oodrb.eval import benchmark
-model = TODO
+from oodrobustbench.eval import benchmark
+model = initialize your own model
 model.eval()
 id_acc, id_rob, ood_acc_robs = benchmark(model,
                                          n_examples=10000,
@@ -183,19 +216,11 @@ id_acc, id_rob, ood_acc_robs = benchmark(model,
                                          eps=8/255)
 ```
 
-This is exactly what happens when you run the script of `python oodrb/eval.py`. Note that the results will be also saved on the disk when calling `benchmark()` to evaluate.
+This is actually what happens when you run `python -m oodrobustbench.eval`. Note that the results will be also saved on the disk when calling `benchmark()` to evaluate.
 
-#### Modifying the source code to support loading your model
+## 5. Custom Models
 
-submit the model or modify the source code
-
-#### Submit your model to RobustBench and upgrade the dependency of this program
-
-submit to RobustBench
-
-## Chawin's Custom Models
-
-Model name is a bit long and starts with `custom_`. It contains the hyperparameter choices. For example, `custom_convmixer_trades_trades_seed0_bs512_lr0.1_wd0.0001_sgd_50ep_eps0.5_beta0.1`,
+The following instructions explain how to load custom models that we have trained ourselves. Model name is a bit long and starts with `custom_`. It contains the hyperparameter choices. For example, `custom_convmixer_trades_trades_seed0_bs512_lr0.1_wd0.0001_sgd_50ep_eps0.5_beta0.1`,
 
 The weights are hosted on Zenodo and is downloaded automatically when a model is called. Download speed from Zenodo server can be poor sometimes so if you know you want to use all the models, you can download all the weights at once with `zenodo_get` and put them at the right location:
 
@@ -211,11 +236,11 @@ where `$DEPOSIT_ID` and `$MODEL_PATH` are the Zenodo deposit ID and the associat
 
 Please install the extra packages in `requirements.txt`. See `oodar.models.custom_models.utils._MODEL_DATA` for the list of available models.
 
-## Citation
+## 6. Citation
 
 ```
 @inproceedings{li2024oodrobustbench,
-    title={OODRobustBench: a benchmark and large-scale analysis of adversarial robustness under distribution shift},
+    title={OODRobustBench: a Benchmark and Large-Scale Analysis of Adversarial Robustness under Distribution Shift},
     author={Lin Li, Yifei Wang, Chawin Sitawarin, Michael Spratling},
     booktitle={International Conference on Machine Learning},
     year={2024}
