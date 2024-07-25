@@ -108,7 +108,7 @@ model = load_model(model_name='Wong2020Fast',
 
 Replace `/root/to/models` with the real directory for `model_dir`, by default, `models` under the working directory will be used. 
 
-The weights of models of RobustBench and *custom models* will be automatically downloaded and placed in the specified directory if needed, while the weights of *public collected* models currently need to be manually downloaded from this sharedpoint (TODO) and placed in the appropriate directory. 
+The weights of models of RobustBench and *custom models* will be automatically downloaded and placed in the specified directory if needed, while the weights of *public collected* models currently need to be manually downloaded (currently please email Lin Li for links) and placed in the appropriate directory. 
 
 Regarding model names, please refer to [robustbench](https://github.com/RobustBench/robustbench) for RobustBench models, [this section](#5.-Custom-Models) for custom models, and [this source code file](https://github.com/OODRobustBench/OODRobustBench/blob/main/oodrobustbench/models/__init__.py) for public collected models.
 
